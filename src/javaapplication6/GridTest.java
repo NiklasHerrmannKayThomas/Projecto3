@@ -15,10 +15,12 @@ public class GridTest extends JFrame
     private GridLayout experimentLayout;
     private int numberOfPlayer;
     private int playerOrder=0;
-    private static int livingCellNumber=0; 
+    private static int livingCellNumber=0;
+    private int eventWinnerChecker=0;
     ImageIcon empty = new ImageIcon(getClass().getResource("WhiteSpace.png"));
     ImageIcon player1 = new ImageIcon(getClass().getResource("RedSpace.png"));
     ImageIcon player2 = new ImageIcon(getClass().getResource("BlueSpace.png"));
+    ImageIcon player3 = new ImageIcon(getClass().getResource("YellowSPace.png"));
     private Cell gameBoard[][];
     public GridTest()
     {
@@ -30,10 +32,7 @@ public class GridTest extends JFrame
         
         playerNumberAndBoardSize();
         dynamicAllocation();
-        System.out.println(SIZE);
-        System.out.println(SIZECol);
         experimentLayout =  new GridLayout(SIZE,SIZECol);
-
         panel = new JPanel();
         panel.setLayout(experimentLayout);
 
@@ -45,11 +44,20 @@ public class GridTest extends JFrame
     }
  
 public void addButtons(JPanel panel) {
-   for (int k = 0; k < SIZE; k++) {
+    for (int k = 0; k < SIZE; k++) {
        for (int j = 0; j < SIZECol; j++) {
-               buttons[k][j] = new JButton(empty);
-               buttons[k][j].addActionListener(new listenButtonTwoPlayers());
-               panel.add(buttons[k][j]);
+               if(numberOfPlayer==2)
+               {
+                   buttons[k][j] = new JButton(empty);
+                   buttons[k][j].addActionListener(new listenButtonTwoPlayers());
+                   panel.add(buttons[k][j]);
+               }
+               if(numberOfPlayer==3)
+               {
+                   buttons[k][j] = new JButton(empty);
+                   buttons[k][j].addActionListener(new listenButtonThreePlayers());
+                   panel.add(buttons[k][j]);
+               }
            }
          
       }
@@ -92,7 +100,6 @@ private class listenButtonTwoPlayers implements ActionListener
                                     {
                                        if(i+1==getBoardSize() && gameBoard[i][j].getCellState()==0)
                                        {
-                                       System.out.println("Entered i+1==getBoardSize()");
                                        buttons[i-k][j].setIcon(player1);          // Set new icon to player 1 
                                        gameBoard[i-k][j].setAllPosition('X', i);  // Set cell parameters
                                        gameBoard[i-k][j].setCellState(1);
@@ -103,7 +110,6 @@ private class listenButtonTwoPlayers implements ActionListener
                                        break; 
                                        }else{
                                            if(gameBoard[i+1][j].getCellState()!=0 && gameBoard[i][j].getCellState()!=2 && gameBoard[i][j].getCellState()!=1){
-                                               System.out.println("Entered gameBoard[i+1][j].getCellState()!=0");
                                                buttons[i-k][j].setIcon(player1);            // Set new icon to player 2
                                                gameBoard[i-k][j].setAllPosition('X', i);    // Set cell parameters    
                                                gameBoard[i-k][j].setCellState(1);           // Set cell state
@@ -132,7 +138,6 @@ private class listenButtonTwoPlayers implements ActionListener
                                     {
                                        if(i+1==getBoardSize() && gameBoard[i][j].getCellState()==0)
                                        {
-                                       System.out.println("Entered i+1==getBoardSize()");
                                        buttons[i-k][j].setIcon(player2);            // Set new icon to player 2
                                        gameBoard[i-k][j].setAllPosition('O', i);    // Set cell parameters    
                                        gameBoard[i-k][j].setCellState(2);           // Set cell state
@@ -143,7 +148,6 @@ private class listenButtonTwoPlayers implements ActionListener
                                        break;
                                        }else{
                                            if(gameBoard[i+1][j].getCellState()!=0 && gameBoard[i][j].getCellState()!=1 && gameBoard[i][j].getCellState()!=2){
-                                               System.out.println("Entered gameBoard[i+1][j].getCellState()!=0");
                                                buttons[i-k][j].setIcon(player2);            // Set new icon to player 2
                                                gameBoard[i-k][j].setAllPosition('O', i);    // Set cell parameters    
                                                gameBoard[i-k][j].setCellState(2);           // Set cell state
@@ -160,6 +164,141 @@ private class listenButtonTwoPlayers implements ActionListener
                                 System.out.println("... Player 2 played ... ");
                                 ++playerOrder;
                                 break;
+                            }
+                        } // END EVENT SOURCE
+                    } // END SECOND FOR LOOP         
+                } // END FIRST FOR LOOP     
+        }catch(Exception ex) 
+        { 
+            warningMessage(); 
+        }     
+       
+        }
+ }
+private class listenButtonThreePlayers implements ActionListener
+    {           
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {            
+            try {
+                int eventFlag = 0;
+                int flagPlayerOrder=0;
+                
+                for(int i=getBoardSize()-1; i>=0; --i)
+                {
+                    for(int j=0; j<=getBoardSizeCol()-1; ++j)
+                    {
+                        if(eventFlag==0 && buttons[i][j]== e.getSource()) // Get the button component that was clicked
+                        {  
+                           if(flagPlayerOrder==0 && playerOrder==0) 
+                           { 
+                               // Player 1 Operations                           
+                               // Fill the board from down to up
+                                for(int k=0; k<=getBoardSize(); ++i)    
+                                {
+                                    if(gameBoard[i-k][j].getCellState()==0 && playerOrder==0)
+                                    {
+                                       if(i+1==getBoardSize() && gameBoard[i][j].getCellState()==0)
+                                       {
+                                       buttons[i-k][j].setIcon(player1);          // Set new icon to player 1 
+                                       gameBoard[i-k][j].setAllPosition('X', i);  // Set cell parameters
+                                       gameBoard[i-k][j].setCellState(1);
+                                       ++livingCellNumber;  // Increase living cell number
+                                       winnerPlayer(1);     // Check player 1 winning state
+                                       flagPlayerOrder=1;   
+                                       eventFlag=1;
+                                       break; 
+                                       }else{
+                                           if(gameBoard[i+1][j].getCellState()!=0 && gameBoard[i][j].getCellState()!=2 && gameBoard[i][j].getCellState()!=1 && gameBoard[i][j].getCellState()!=3){
+                                               buttons[i-k][j].setIcon(player1);            // Set new icon to player 2
+                                               gameBoard[i-k][j].setAllPosition('X', i);    // Set cell parameters    
+                                               gameBoard[i-k][j].setCellState(1);           // Set cell state
+                                               ++livingCellNumber;
+                                               winnerPlayer(1);
+                                               flagPlayerOrder=1;
+                                               eventFlag=1;
+                                               break;
+                                           }
+                                       }
+                                    } 
+                                }
+
+                                setUpperCellToEmpty(i,j);   // Set upper cell to empty 
+                                System.out.println("... Player 1 played ... ");
+                                ++playerOrder; // Change order from player 1 to player 2
+                                break;
+                            }
+
+                            // Player 2 operations
+                            if(flagPlayerOrder==0 && playerOrder==1) 
+                            { 
+                                for(int k=0; k<=getBoardSize(); ++i)
+                                {
+                                    if(gameBoard[i-k][j].getCellState()==0 && playerOrder==1)
+                                    {
+                                       if(i+1==getBoardSize() && gameBoard[i][j].getCellState()==0)
+                                       {
+                                       buttons[i-k][j].setIcon(player2);            // Set new icon to player 2
+                                       gameBoard[i-k][j].setAllPosition('O', i);    // Set cell parameters    
+                                       gameBoard[i-k][j].setCellState(2);           // Set cell state
+                                       ++livingCellNumber;
+                                       winnerPlayer(2);
+                                       flagPlayerOrder=1;
+                                       eventFlag=1;
+                                       break;
+                                       }else{
+                                           if(gameBoard[i+1][j].getCellState()!=0 && gameBoard[i][j].getCellState()!=1 && gameBoard[i][j].getCellState()!=2 && gameBoard[i][j].getCellState()!=3){
+                                               buttons[i-k][j].setIcon(player2);            // Set new icon to player 2
+                                               gameBoard[i-k][j].setAllPosition('O', i);    // Set cell parameters    
+                                               gameBoard[i-k][j].setCellState(2);           // Set cell state
+                                               ++livingCellNumber;
+                                               winnerPlayer(2);
+                                               flagPlayerOrder=1;
+                                               eventFlag=1;
+                                               break;
+                                           }
+                                       }
+                                    } 
+                                }
+                                setUpperCellToEmpty(i,j);
+                                System.out.println("... Player 2 played ... ");
+                                ++playerOrder;
+                                break;
+                            }
+                            if(flagPlayerOrder==0 && playerOrder==2)
+                            {
+                               for (int k=0; k<=getBoardSize(); ++i)
+                               {
+                                   if (gameBoard[i-k][j].getCellState()==0 && playerOrder==2)
+                                   {
+                                       if(i+1==getBoardSize() && gameBoard[i][j].getCellState()==0)
+                                       {
+                                       buttons[i-k][j].setIcon(player3);            // Set new icon to player 2
+                                       gameBoard[i-k][j].setAllPosition('T', i);    // Set cell parameters    
+                                       gameBoard[i-k][j].setCellState(3);           // Set cell state
+                                       ++livingCellNumber;
+                                       winnerPlayer(3);
+                                       flagPlayerOrder=1;
+                                       eventFlag=1;
+                                       break;
+                                       }else{
+                                           if(gameBoard[i+1][j].getCellState()!=0 && gameBoard[i][j].getCellState()!=1 && gameBoard[i][j].getCellState()!=2 && gameBoard[i][j].getCellState()!=3){
+                                               buttons[i-k][j].setIcon(player3);            // Set new icon to player 2
+                                               gameBoard[i-k][j].setAllPosition('T', i);    // Set cell parameters    
+                                               gameBoard[i-k][j].setCellState(3);           // Set cell state
+                                               ++livingCellNumber;
+                                               winnerPlayer(3);
+                                               flagPlayerOrder=1;
+                                               eventFlag=1;
+                                               break;
+                                           }
+                                       }
+                                   }
+                               }
+                               setUpperCellToEmpty(i,j);
+                               System.out.println("... Player 3 played ... ");
+                               playerOrder=0;
+                               break;
                             }
                         } // END EVENT SOURCE
                     } // END SECOND FOR LOOP         
@@ -198,9 +337,6 @@ public void playerNumberAndBoardSize()
         numberOfPlayer  = Integer.parseInt(playerNumber); 
         int sizeOfBoard = Integer.parseInt(boardSize);
         int lengthOfBoard = Integer.parseInt(boardSizeCol);
-        System.out.println(numberOfPlayer);
-        System.out.println(sizeOfBoard);
-        System.out.println(lengthOfBoard);
 
         // User input check to game board
         if(sizeOfBoard < 6)
@@ -257,7 +393,7 @@ public void startAgain()
             for(int j=0; j<getBoardSizeCol(); ++j)
             {
                 gameBoard[i][j].setCellState(-99);  // Initial Value
-                buttons[i][j].setIcon(empty);       // Put the empty cell icon
+                buttons[i][j].setIcon(empty);// Put the empty cell icon               
             }
         }
         
@@ -268,21 +404,35 @@ public void startAgain()
 public void showResult(int winnerPlayer)
    {
        JFrame frameShowResult = new JFrame();       
-       if(winnerPlayer==1)
+       if(winnerPlayer==1 && eventWinnerChecker==0)
        {
             JOptionPane.showMessageDialog(frameShowResult,
             "\nWinner : Player 1\n\nThe new game will start.\n\n",
             "End Game",
             JOptionPane.INFORMATION_MESSAGE);
+            winnerPlayer=0;
+            ++eventWinnerChecker;
             startAgain(); 
        }
-       else
+       if(winnerPlayer==3 && eventWinnerChecker==0)
+       {
+            JOptionPane.showMessageDialog(frameShowResult,
+            "\nWinner : Player 3\n\nThe new game will start.\n\n",
+            "End Game",
+            JOptionPane.INFORMATION_MESSAGE);
+            winnerPlayer=0;
+            ++eventWinnerChecker;
+            startAgain();
+       }
+       if(winnerPlayer==2 && eventWinnerChecker==0)
        {
             JOptionPane.showMessageDialog(frameShowResult,
             "\nWinner : Player 2\n\nThe new game will start.\n\n",
             "End Game",
-            JOptionPane.INFORMATION_MESSAGE); 
-            startAgain();    
+            JOptionPane.INFORMATION_MESSAGE);
+            winnerPlayer=0;
+            ++eventWinnerChecker;
+            startAgain();
        }
    }
 public void winnerPlayer(int winner)
@@ -292,27 +442,34 @@ public void winnerPlayer(int winner)
             for(int j=0; j<getBoardSizeCol(); ++j)
             {     
                 if(gameBoard[i][j].getCellState() == winner)
-                {    
+                {
                     // CHECK UP TO DOWN POSITIONS
                     if(i+3<getBoardSize())
                     {
                         if(gameBoard[i+1][j].getCellState() == winner && gameBoard[i+2][j].getCellState() == winner && gameBoard[i+3][j].getCellState() == winner)  
                         {
+                            eventWinnerChecker=0;
                             if(winner==1)
                                 showResult(1);
-                            else
+                            if(winner==3)
+                                showResult(3);
+                            if(winner==2);
                                 showResult(2);
                         }
                     }
                     // CHECK LEFT TO RIGHT POSITION
                     if(j + 3 <getBoardSizeCol())
-                    { 
+                    {
                         if(gameBoard[i][j+1].getCellState() == winner && gameBoard[i][j+2].getCellState() == winner && gameBoard[i][j+3].getCellState() == winner)
                         { 
+                            eventWinnerChecker=0;
                             if(winner==1)
                                 showResult(1);
-                            else
+                            if(winner==3)
+                                showResult(3);
+                            if(winner==2);
                                 showResult(2);
+                                
                         }
                     }
 
@@ -320,10 +477,13 @@ public void winnerPlayer(int winner)
                     if(i  < getBoardSize()- 3 && j<getBoardSizeCol()-3)
                     {
                         if(gameBoard[i+1][j+1].getCellState() == winner && gameBoard[i+2][j+2].getCellState() == winner && gameBoard[i+3][j+3].getCellState() == winner)
-                        {  
+                        {
+                            eventWinnerChecker=0;
                             if(winner==1)
                                 showResult(1);
-                            else
+                            if(winner==3)
+                                showResult(3);
+                            if(winner==2);
                                 showResult(2);
                         }   
                     }
@@ -333,9 +493,12 @@ public void winnerPlayer(int winner)
                     {
                         if(gameBoard[i+1][j-1].getCellState() == winner && gameBoard[i+2][j-2].getCellState() == winner && gameBoard[i+3][j-3].getCellState() == winner)
                         {
+                            eventWinnerChecker=0;
                             if(winner==1)
                                 showResult(1);
-                            else
+                            if(winner==3)
+                                showResult(3);
+                            if(winner==2);
                                 showResult(2);
                         } 
                     }                           
