@@ -39,6 +39,7 @@ public class GridTest extends JFrame
 
         buttons = new JButton[SIZE+1][SIZECol];
         labelneeded = new JLabel[SIZE+1][SIZECol];
+        
         addButtons(panel);
 
         add(panel);
@@ -83,6 +84,7 @@ public void addButtons(JPanel panel) {
                 gameBoard [i][j]=new Cell();
             }
         }
+        livingCellNumber=0;
     }  
 private class listenButtonTwoPlayers implements ActionListener
     {           
@@ -282,7 +284,7 @@ private class listenButtonThreePlayers implements ActionListener
                                    {
                                        if(i+1==getBoardSize() && gameBoard[i][j].getCellState()==0)
                                        {
-                                       buttons[i-k][j].setIcon(player3);            // Set new icon to player 2
+                                       buttons[i-k][j].setIcon(player3);            // Set new icon to player 3
                                        gameBoard[i-k][j].setAllPosition('T', i);    // Set cell parameters    
                                        gameBoard[i-k][j].setCellState(3);           // Set cell state
                                        ++livingCellNumber;
@@ -292,7 +294,7 @@ private class listenButtonThreePlayers implements ActionListener
                                        break;
                                        }else{
                                            if(gameBoard[i+1][j].getCellState()!=0 && gameBoard[i][j].getCellState()!=1 && gameBoard[i][j].getCellState()!=2 && gameBoard[i][j].getCellState()!=3){
-                                               buttons[i-k][j].setIcon(player3);            // Set new icon to player 2
+                                               buttons[i-k][j].setIcon(player3);            // Set new icon to player 3
                                                gameBoard[i-k][j].setAllPosition('T', i);    // Set cell parameters    
                                                gameBoard[i-k][j].setCellState(3);           // Set cell state
                                                ++livingCellNumber;
@@ -443,6 +445,14 @@ public void showResult(int winnerPlayer)
             ++eventWinnerChecker;
             startAgain();
        }
+       if(winnerPlayer==4 && eventWinnerChecker==0){
+           JOptionPane.showMessageDialog(frameShowResult,
+            "\nDraw, nobody wins!\n\nThe new game will start.\n\n",
+            "End Game", JOptionPane.INFORMATION_MESSAGE);
+           winnerPlayer=0;
+           ++eventWinnerChecker;
+           startAgain();
+       }
    }
 public void winnerPlayer(int winner)
     {
@@ -510,7 +520,13 @@ public void winnerPlayer(int winner)
                             if(winner==2);
                                 showResult(2);
                         } 
-                    }                           
+                    }
+                    System.out.println(SIZE*SIZECol);
+                    System.out.println(livingCellNumber);
+                    if(SIZE*SIZECol==livingCellNumber){
+                        eventWinnerChecker=0;
+                        showResult(4);
+                    }
                 }         
             }             
         } 
