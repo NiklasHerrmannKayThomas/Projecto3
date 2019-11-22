@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 public class GridTest extends JFrame
 {
     private JPanel panel;
+    private JLabel[][]labelneeded;
     private JButton[][]buttons;
     private int SIZE;
     private int SIZECol;
@@ -32,11 +33,12 @@ public class GridTest extends JFrame
         
         playerNumberAndBoardSize();
         dynamicAllocation();
-        experimentLayout =  new GridLayout(SIZE,SIZECol);
+        experimentLayout =  new GridLayout(SIZE+1,SIZECol);
         panel = new JPanel();
         panel.setLayout(experimentLayout);
 
-        buttons = new JButton[SIZE][SIZECol];
+        buttons = new JButton[SIZE+1][SIZECol];
+        labelneeded = new JLabel[SIZE+1][SIZECol];
         addButtons(panel);
 
         add(panel);
@@ -59,9 +61,16 @@ public void addButtons(JPanel panel) {
                    panel.add(buttons[k][j]);
                }
            }
-         
+       
       }
-   }
+    buttons[SIZE][0] = new JButton("Mensaje");
+    panel.add(buttons[SIZE][0]);
+    buttons[SIZE][1] = new JButton("Salir");
+    panel.add(buttons[SIZE][1]);
+    labelneeded[SIZE][2] = new JLabel("Good luck brother, im counting on ya");
+    panel.add(labelneeded[SIZE][2]);
+}
+
 
  public void dynamicAllocation()
     {
@@ -359,7 +368,7 @@ public void playerNumberAndBoardSize()
            System.exit(0);
         }
         
-        setBoardSize(sizeOfBoard);
+        setBoardSize(sizeOfBoard+1);
         setBoardSizeCol(lengthOfBoard);
     }
 public void setBoardSize(int newSize)
